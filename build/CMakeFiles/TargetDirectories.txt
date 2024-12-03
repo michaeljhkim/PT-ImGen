@@ -1,0 +1,3 @@
+/home/mk/Documents/3GC3_ASSIGNMENT_4/build/CMakeFiles/ray_trace_assignment.dir
+/home/mk/Documents/3GC3_ASSIGNMENT_4/build/CMakeFiles/edit_cache.dir
+/home/mk/Documents/3GC3_ASSIGNMENT_4/build/CMakeFiles/rebuild_cache.dir
