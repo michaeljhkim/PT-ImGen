@@ -1,1 +1,3 @@
-# 3GC3_ASSIGNMENT_4
+# Ray-Trace-Image-Generator
+
+C-based program for producing low resolution, fully path-traced images.  
