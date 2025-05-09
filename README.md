@@ -1,3 +1,3 @@
 # Ray-Trace-Image-Generator
 
-C-based program for producing low resolution, fully path-traced images.  
+C++-based path-tracing algorithm for producing low resolution images (any higher and generation time becomes unreasonable).  
