@@ -1,4 +1,4 @@
-# Ray-Trace-Image-Generator
+# Path-Trace-Image-Generator
 
 C++-based path-tracing algorithm for producing standard resolution images.
 
