@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/mk/Documents/3GC3_ASSIGNMENT_4/build",
-  "command": "/usr/bin/g++ -DTBB_USE_DEBUG -I/home/mk/Documents/3GC3_ASSIGNMENT_4/include -g -std=gnu++17 -o CMakeFiles/ray_trace_assignment.dir/src/main.cpp.o -c /home/mk/Documents/3GC3_ASSIGNMENT_4/src/main.cpp",
-  "file": "/home/mk/Documents/3GC3_ASSIGNMENT_4/src/main.cpp",
-  "output": "CMakeFiles/ray_trace_assignment.dir/src/main.cpp.o"
-}
-]
