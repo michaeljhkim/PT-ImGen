@@ -10,10 +10,7 @@
 #include <execution>
 #include <chrono>
 
-//NOTE: ALL TODO COMMENTS KEPT FOR EASY REFERENCE
-
-void write_color_to_file(std::ostream &out, Vector3D pixel_color, int samples_per_pixel)
-{
+void write_color_to_file(std::ostream &out, Vector3D pixel_color, int samples_per_pixel) {
     auto r = pixel_color.x();
     auto g = pixel_color.y();
     auto b = pixel_color.z();
@@ -27,14 +24,12 @@ void write_color_to_file(std::ostream &out, Vector3D pixel_color, int samples_pe
     out << int(r) << ' ' << int(g) << ' ' << int(b)<< '\n';
 }
 
-Vector3D ray_hit_color(Ray& r, World& world, int max_light_bounce_num)
-{
+Vector3D ray_hit_color(Ray& r, World& world, int max_light_bounce_num) {
     if (max_light_bounce_num <= 0)
         return Vector3D(0,0,0);
     
     HitResult hit = world.hit(r, 0.001, std::numeric_limits<float>::infinity());
-    if (hit.m_isHit)
-    {
+    if (hit.m_isHit) {
         ReflectResult res = hit.m_hitMaterial->reflect(r, hit);
         return res.m_color * ray_hit_color(res.m_ray, world, max_light_bounce_num-1);
     }
@@ -43,7 +38,7 @@ Vector3D ray_hit_color(Ray& r, World& world, int max_light_bounce_num)
 
 
 
-//although unnessecary, I multithreaded because I did not want to wait forever. Even with multithreading, this took 2-3 minutes!
+// Multithreaded Rendering - Even with multithreading, this took 2-3 minutes!
 void generate_results(World &world, std::string result_ppm_path) {
     int width =  768;
     int height = 540;
@@ -57,7 +52,7 @@ void generate_results(World &world, std::string result_ppm_path) {
     float fov = 20;//degree
     Camera camera(eye, target, up, fov, aspect_ratio);
 
-    //TODO: 1. set your own path for output image
+    //set path for output image
     std::vector<Vector3D> pixels(width * height);
     std::for_each(
         std::execution::par,
@@ -87,27 +82,30 @@ void generate_results(World &world, std::string result_ppm_path) {
 }
 
 
-
-int main()
-{   
-    //Measured how long this took (for fun really)
-
+   
+// Starts program
+int main() {
     // Get the starting time point
     auto start = std::chrono::high_resolution_clock::now();
     
     World world;
     
-    //TODO: 6. uncomment one by one and render the following worlds
-    world.generate_scene_one_diffuse();
+    // one_diffuse
+    world.generate_scene_one(Vector3D(0.3, 0.4, 0.5));
     generate_results(world, "1mdiffuse.ppm");
 
-    world.generate_scene_one_specular();
+    // one_specular
+    world.generate_scene_one(Vector3D(1, 1, 1));
     generate_results(world, "1specular.ppm");
 
-    world.generate_scene_multi_diffuse();
+    // multi_diffuse
+    Vector3D diffuse_color = Vector3D::random() * Vector3D::random();
+    world.generate_scene_multi( make_shared<Diffuse>(diffuse_color) );
     generate_results(world, "mdiffuse.ppm");
 
-    world.generate_scene_multi_specular();
+    // multi_specular
+    Vector3D specular_color = Vector3D::random(0.3, 1);
+    world.generate_scene_multi( make_shared<Specular>(specular_color) );
     generate_results(world, "mspecular.ppm");
 
     world.generate_scene_all();
