@@ -13,7 +13,7 @@ float clamp(float x, float min, float max) {
 }
 
 float random_float(/*[0,1)*/) {
-    return static_cast<float>(rand()) / (RAND_MAX + 1.0f);
+    return rand() / (RAND_MAX + 1.0);
 }
 
 float random_float(float min, float max) {
@@ -42,6 +42,12 @@ public:
     float y() const { return m_y; }
     float z() const { return m_z; }
     
+    void gamma_correction(float gamma) {
+        m_x = std::pow(clamp(m_x, 0.0f, 1.0f), 1.0f / gamma);
+        m_y = std::pow(clamp(m_y, 0.0f, 1.0f), 1.0f / gamma);
+        m_z = std::pow(clamp(m_z, 0.0f, 1.0f), 1.0f / gamma);
+    }
+
     Vector3D operator-() const {
         return Vector3D(-m_x, -m_y, -m_z);
     }

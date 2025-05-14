@@ -1,3 +1,6 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include "Camera.h"
 #include "World.h"
 
@@ -69,16 +72,29 @@ void generate_results(World &world, std::string result_ppm_path) {
         }
     );
 
+    // Convert float RGB to 0–255 range and store in image_data - to allow stbi png write
+    std::vector<unsigned char> image_data(width * height * 3); // 3 bytes per pixel (RGB)
+
+    for (int y = 0; y < height; ++y) {
+        int flipped_y = height - 1 - y; 
+
+        for (int x = 0; x < width; ++x) {
+            // flip the veritcal axis due to how stbi_image works
+            int src_index = flipped_y * width + x;
+            int dst_index = (y * width + x) * 3;
+
+            Vector3D color = pixels[src_index] / float(rays_per_pixel);
+            color.gamma_correction(2.0f);
+
+            image_data[dst_index + 0] = static_cast<unsigned char>(color.x() * 255.0f);
+            image_data[dst_index + 1] = static_cast<unsigned char>(color.y() * 255.0f);
+            image_data[dst_index + 2] = static_cast<unsigned char>(color.z() * 255.0f);
+        }
+    }
 
     std::cout << "Raytracing done! Writing to file..." << std::endl;
-    std::ofstream fout(result_ppm_path);
-    fout << "P3\n" << width << ' ' << height << "\n255\n";
-    for (int j = height - 1; j >= 0; j--)
-        for (int i = 0; i < width; i++)
-            write_color_to_file(fout, pixels[j * width + i], rays_per_pixel);
-    fout.flush();
-    fout.close();
-    std::cout << "ppm saved at " << result_ppm_path << std::endl;
+    stbi_write_png(result_ppm_path.c_str(), width, height, 3, image_data.data(), width * 3);
+    std::cout << "png saved at " << result_ppm_path << std::endl;
 }
 
 
@@ -92,24 +108,24 @@ int main() {
     
     // one_diffuse
     world.generate_scene_one(Vector3D(0.3, 0.4, 0.5));
-    generate_results(world, "1mdiffuse.ppm");
+    generate_results(world, "1mdiffuse.png");
 
     // one_specular
     world.generate_scene_one(Vector3D(1, 1, 1));
-    generate_results(world, "1specular.ppm");
+    generate_results(world, "1specular.png");
 
     // multi_diffuse
     Vector3D diffuse_color = Vector3D::random() * Vector3D::random();
     world.generate_scene_multi( make_shared<Diffuse>(diffuse_color) );
-    generate_results(world, "mdiffuse.ppm");
+    generate_results(world, "mdiffuse.png");
 
     // multi_specular
     Vector3D specular_color = Vector3D::random(0.3, 1);
     world.generate_scene_multi( make_shared<Specular>(specular_color) );
-    generate_results(world, "mspecular.ppm");
+    generate_results(world, "mspecular.png");
 
     world.generate_scene_all();
-    generate_results(world, "all.ppm");
+    generate_results(world, "all.png");
 
 
     // Get the ending time point
